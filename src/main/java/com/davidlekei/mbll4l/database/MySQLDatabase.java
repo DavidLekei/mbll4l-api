@@ -2,6 +2,7 @@ package com.davidlekei.mbll4l.database;
 
 import com.davidlekei.mbll4l.Contact;
 import com.davidlekei.mbll4l.Lawyer;
+import com.davidlekei.mbll4l.auth.user.UserStatus;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -71,5 +72,23 @@ public class MySQLDatabase implements Database {
 				results.getString("history")
 		);
 
+	}
+
+	public ResultSet isValidLogin(String username, String password) throws SQLException{
+		PreparedStatement ps = connection.prepareStatement("SELECT email, hashed_password FROM user WHERE email = ?");
+
+		ps.setString(1, username);
+
+		return ps.executeQuery();
+	}
+
+	public int registerUser(String username, String hashed_password) throws SQLException{
+		PreparedStatement ps = connection.prepareStatement("INSERT INTO user(email, status, hashed_password) VALUES(?, ?, ?)");
+
+		ps.setString(1, username);
+		ps.setInt(2, UserStatus.ACTIVE.getValue());
+		ps.setString(3, hashed_password);
+
+		return ps.executeUpdate();
 	}
 }
